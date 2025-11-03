@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FCFS CPU Scheduling Simulator (Project DA 1)</title>
+    [cite_start]<title>FCFS CPU Scheduling Simulator (Project DA 1) [cite: 7]</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Basic inline CSS to ensure elements are visible for immediate testing */
@@ -30,25 +30,24 @@
                             <th>Process ID</th>
                             <th>Arrival Time (AT)</th>
                             <th>Burst Time (BT)</th>
-                            <th>Action</th>
-                        </tr>
+                            <th>Action</th> </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>P1</td>
                             <td><input type="number" value="0" min="0" data-id="1" data-field="arrival"></td>
                             <td><input type="number" value="5" min="1" data-id="1" data-field="burst"></td>
-                        </tr>
+                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
                         <tr>
                             <td>P2</td>
                             <td><input type="number" value="2" min="0" data-id="2" data-field="arrival"></td>
                             <td><input type="number" value="3" min="1" data-id="2" data-field="burst"></td>
-                        </tr>
+                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
                         <tr>
                             <td>P3</td>
                             <td><input type="number" value="4" min="0" data-id="3" data-field="arrival"></td>
                             <td><input type="number" value="2" min="1" data-id="3" data-field="burst"></td>
-                        </tr>
+                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
                     </tbody>
                 </table>
                 <button onclick="addProcessRow()">Add Process</button>
@@ -91,7 +90,7 @@
         <hr>
 
         <section id="export-section">
-            <button onclick="exportScreenshot()">Export Screenshot (WIP)</button>
+            <button onclick="exportScreenshot()">Export Screenshot</button>
         </section>
         
     </main>
@@ -100,29 +99,53 @@
     <script src="animation.js"></script>
     
     <script>
-        let processCounter = 4;
+        // Start counter based on initial rows (P1, P2, P3 are 3, so next is P4)
+        let processCounter = 4; 
+        
+        /** Adds a new process row to the input table. */
         function addProcessRow() {
             const tableBody = document.getElementById('process-table').getElementsByTagName('tbody')[0];
             const newRow = tableBody.insertRow();
-            
-            // Increment process ID
             const pid = `P${processCounter++}`;
 
-            // Insert cells
+            // Insert cells with inputs
             newRow.insertCell(0).textContent = pid;
             newRow.insertCell(1).innerHTML = `<input type="number" value="0" min="0" data-id="${pid}" data-field="arrival">`;
             newRow.insertCell(2).innerHTML = `<input type="number" value="1" min="1" data-id="${pid}" data-field="burst">`;
+            
+            // Add the new DELETE button cell
+            newRow.insertCell(3).innerHTML = `<button onclick="deleteProcess(this)">Delete</button>`; 
+        }
+
+        /** Deletes a process row from the input table and relabels processes. */
+        function deleteProcess(btn) {
+            // Get the parent row (TR) of the button
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            
+            // Re-label the process IDs after deletion
+            relabelProcesses();
+        }
+
+        /** Re-labels the Process IDs (P1, P2, P3...) sequentially after a deletion. */
+        function relabelProcesses() {
+            const tableBody = document.getElementById('process-table').getElementsByTagName('tbody')[0];
+            const rows = tableBody.rows;
+            let counter = 1;
+            for (const row of rows) {
+                row.cells[0].textContent = `P${counter++}`;
+            }
+            processCounter = counter;
         }
         
-        // Placeholder for the main simulation function
+        // Placeholder for the main simulation function (defined in algorithm.js)
         function runSimulation() {
-            // This will call the FCFS calculation function from algorithm.js
-            const rawData = getProcessesFromUI();
+            const rawData = getProcessesFromUI(); // From algorithm.js
             if (rawData.length > 0) {
-                const calculatedData = calculateFCFS(rawData);
-                generateExecutionTrace(calculatedData);
+                const calculatedData = calculateFCFS(rawData); // From algorithm.js
+                generateExecutionTrace(calculatedData); // From algorithm.js
             } else {
-                alert("Please add at least one process.");
+                alert("Please add at least one process to run the simulation.");
             }
         }
     </script>
