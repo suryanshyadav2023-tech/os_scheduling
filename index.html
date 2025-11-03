@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCFS CPU Scheduling Simulator (Project DA 1)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic inline CSS to ensure elements are visible for immediate testing */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        main { max-width: 1200px; margin: auto; }
+        #scheduler-canvas { border: 1px solid #ccc; display: block; margin: 20px 0; }
+        #control-stats-section { display: flex; justify-content: space-between; margin: 20px 0; align-items: center; }
+        table, th, td { border: 1px solid #ddd; border-collapse: collapse; padding: 8px; text-align: left; }
+        input[type="number"] { width: 60px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Operating System Digital Assessment 1: FCFS Simulator</h1>
+    </header>
+
+    <main>
+        <section id="input-section">
+            <h2>Process Input</h2>
+            <div id="process-table-container">
+                <table id="process-table">
+                    <thead>
+                        <tr>
+                            <th>Process ID</th>
+                            <th>Arrival Time (AT)</th>
+                            <th>Burst Time (BT)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>P1</td>
+                            <td><input type="number" value="0" min="0" data-id="1" data-field="arrival"></td>
+                            <td><input type="number" value="5" min="1" data-id="1" data-field="burst"></td>
+                        </tr>
+                        <tr>
+                            <td>P2</td>
+                            <td><input type="number" value="2" min="0" data-id="2" data-field="arrival"></td>
+                            <td><input type="number" value="3" min="1" data-id="2" data-field="burst"></td>
+                        </tr>
+                        <tr>
+                            <td>P3</td>
+                            <td><input type="number" value="4" min="0" data-id="3" data-field="arrival"></td>
+                            <td><input type="number" value="2" min="1" data-id="3" data-field="burst"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button onclick="addProcessRow()">Add Process</button>
+                <button onclick="runSimulation()">Run FCFS Calculation</button>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="control-stats-section">
+            <div id="controls">
+                <button id="step-backward-btn" disabled>⏮️ Step Backward</button>
+                <button id="pause-btn" disabled>⏸️ Pause</button>
+                <button id="play-btn" disabled>▶️ Play</button>
+                <button id="step-forward-btn" disabled>⏭️ Step Forward</button>
+                
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="100" max="1000" value="500" step="50"> ms/step
+            </div>
+            
+            <div id="statistics">
+                <h3>Execution Statistics</h3>
+                <p>Current Time: <span id="current-time">0</span></p>
+                <p>Avg. Waiting Time: <span id="avg-waiting-time">N/A</span></p>
+                <p>Avg. Turnaround Time: <span id="avg-turnaround-time">N/A</span></p>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="visualization-section">
+            <h2>Gantt Chart & Process States</h2>
+            <canvas id="scheduler-canvas" width="1000" height="300"></canvas> 
+            <div id="process-states">
+                <h3>Ready Queue:</h3>
+                <div id="ready-queue-display">Waiting processes will appear here...</div>
+            </div>
+        </section>
+        
+        <hr>
+
+        <section id="export-section">
+            <button onclick="exportScreenshot()">Export Screenshot (WIP)</button>
+        </section>
+        
+    </main>
+    
+    <script src="algorithm.js"></script>
+    <script src="animation.js"></script>
+    
+    <script>
+        let processCounter = 4;
+        function addProcessRow() {
+            const tableBody = document.getElementById('process-table').getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow();
+            
+            // Increment process ID
+            const pid = `P${processCounter++}`;
+
+            // Insert cells
+            newRow.insertCell(0).textContent = pid;
+            newRow.insertCell(1).innerHTML = `<input type="number" value="0" min="0" data-id="${pid}" data-field="arrival">`;
+            newRow.insertCell(2).innerHTML = `<input type="number" value="1" min="1" data-id="${pid}" data-field="burst">`;
+        }
+        
+        // Placeholder for the main simulation function
+        function runSimulation() {
+            // This will call the FCFS calculation function from algorithm.js
+            const rawData = getProcessesFromUI();
+            if (rawData.length > 0) {
+                const calculatedData = calculateFCFS(rawData);
+                generateExecutionTrace(calculatedData);
+            } else {
+                alert("Please add at least one process.");
+            }
+        }
+    </script>
+</body>
+</html>
