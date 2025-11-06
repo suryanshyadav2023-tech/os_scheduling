@@ -1,5 +1,3 @@
-// algorithm.js — FCFS Scheduling Logic + Trace Generation
-
 // Get process data from the table
 function getProcessesFromUI() {
     const tableBody = document.querySelector('#process-table tbody');
@@ -33,7 +31,6 @@ function calculateFCFS(processes) {
     let currentTime = 0;
 
     sorted.forEach(proc => {
-        // Process starts after arrival or when CPU becomes free
         proc.start = Math.max(currentTime, proc.arrival);
         proc.finish = proc.start + proc.burst;
         proc.turnaround = proc.finish - proc.arrival;
@@ -75,21 +72,52 @@ function generateExecutionTrace(processes) {
     return trace;
 }
 
+// ==========================
+// Simulation Control Section
+// ==========================
+
 // Run Simulation
 function runSimulation() {
     const processes = getProcessesFromUI();
 
     if (processes.length === 0) {
-        alert("Please add at least one valid process before running the simulation.");
+        alert("⚠️ Please add at least one valid process before running the simulation.");
         return;
     }
 
     const scheduled = calculateFCFS(processes);
     const trace = generateExecutionTrace(scheduled);
 
-    // Send data to animation.js
-    initAnimation(trace, scheduled);
+    // Call animation.js to visualize
+    if (typeof initAnimation === "function") {
+        initAnimation(trace, scheduled);
+    } else {
+        console.error("❌ initAnimation() not found. Check animation.js import.");
+    }
 }
+
+// Reset the simulation (table + canvas)
+function resetSimulation() {
+    const tbody = document.querySelector('#process-table tbody');
+    if (tbody) tbody.innerHTML = '';
+
+    const canvas = document.getElementById('scheduler-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    const readyQueueDiv = document.getElementById('ready-queue-display');
+    if (readyQueueDiv) readyQueueDiv.textContent = '';
+
+    if (typeof resetAnimation === "function") {
+        resetAnimation(); // optional cleanup if animation.js supports it
+    }
+}
+
+// ==========================
+// Table Row Management
+// ==========================
 
 // Add new process row dynamically
 function addProcessRow() {
@@ -107,8 +135,7 @@ function addProcessRow() {
 // Delete a process from table
 function deleteProcess(btn) {
     const row = btn.closest('tr');
-    row.remove();
-
+    if (row) row.remove();
     relabelProcesses();
 }
 
@@ -119,3 +146,16 @@ function relabelProcesses() {
         row.cells[0].textContent = `P${index + 1}`;
     });
 }
+
+// ==========================
+// Event Listener Initialization
+// ==========================
+document.addEventListener("DOMContentLoaded", () => {
+    const addBtn = document.getElementById("add-process-btn");
+    const simulateBtn = document.getElementById("simulate-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+    if (addBtn) addBtn.addEventListener("click", addProcessRow);
+    if (simulateBtn) simulateBtn.addEventListener("click", runSimulation);
+    if (resetBtn) resetBtn.addEventListener("click", resetSimulation);
+});
