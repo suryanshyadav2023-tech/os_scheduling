@@ -1,154 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FCFS CPU Scheduling Simulator (Project DA 1)</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Basic inline CSS to ensure elements are visible for immediate testing */
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        main { max-width: 1200px; margin: auto; }
-        #scheduler-canvas { border: 1px solid #ccc; display: block; margin: 20px 0; }
-        #control-stats-section { display: flex; justify-content: space-between; margin: 20px 0; align-items: center; }
-        table, th, td { border: 1px solid #ddd; border-collapse: collapse; padding: 8px; text-align: left; }
-        input[type="number"] { width: 60px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FCFS CPU Scheduling — Simulation</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>Operating System Digital Assessment 1: FCFS Simulator</h1>
-    </header>
+  <main>
+    <h1>FCFS CPU Scheduling Simulator</h1>
+    <p>
+      This tool visualizes the <strong>First Come First Serve (FCFS)</strong> CPU Scheduling algorithm.
+      Add your processes below and click <strong>Simulate</strong> to view the Gantt chart animation.
+    </p>
 
-    <main>
-        <section id="input-section">
-            <h2>Process Input</h2>
-            <div id="process-table-container">
-                <table id="process-table">
-                    <thead>
-                        <tr>
-                            <th>Process ID</th>
-                            <th>Arrival Time (AT)</th>
-                            <th>Burst Time (BT)</th>
-                            <th>Action</th> </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>P1</td>
-                            <td><input type="number" value="0" min="0" data-id="1" data-field="arrival"></td>
-                            <td><input type="number" value="5" min="1" data-id="1" data-field="burst"></td>
-                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
-                        <tr>
-                            <td>P2</td>
-                            <td><input type="number" value="2" min="0" data-id="2" data-field="arrival"></td>
-                            <td><input type="number" value="3" min="1" data-id="2" data-field="burst"></td>
-                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
-                        <tr>
-                            <td>P3</td>
-                            <td><input type="number" value="4" min="0" data-id="3" data-field="arrival"></td>
-                            <td><input type="number" value="2" min="1" data-id="3" data-field="burst"></td>
-                            <td><button onclick="deleteProcess(this)">Delete</button></td> </tr>
-                    </tbody>
-                </table>
-                <button onclick="addProcessRow()">Add Process</button>
-                <button onclick="runSimulation()">Run FCFS Calculation</button>
-            </div>
-        </section>
+    <hr />
 
-        <hr>
+    <!-- Process Input Section -->
+    <section>
+      <h2>Process Table</h2>
+      <table id="process-table">
+        <thead>
+          <tr>
+            <th>Process ID</th>
+            <th>Arrival Time</th>
+            <th>Burst Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="process-body">
+          <tr>
+            <td>P1</td>
+            <td><input type="number" min="0" value="0" class="arrival" /></td>
+            <td><input type="number" min="1" value="5" class="burst" /></td>
+            <td><button onclick="removeRow(this)">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
 
-        <section id="control-stats-section">
-            <div id="controls">
-                <button id="step-backward-btn" disabled>⏮️ Step Backward</button>
-                <button id="pause-btn" disabled>⏸️ Pause</button>
-                <button id="play-btn" disabled>▶️ Play</button>
-                <button id="step-forward-btn" disabled>⏭️ Step Forward</button>
-                
-                <label for="speed">Speed:</label>
-                <input type="range" id="speed" min="100" max="1000" value="500" step="50"> ms/step
-            </div>
-            
-            <div id="statistics">
-                <h3>Execution Statistics</h3>
-                <p>Current Time: <span id="current-time">0</span></p>
-                <p>Avg. Waiting Time: <span id="avg-waiting-time">N/A</span></p>
-                <p>Avg. Turnaround Time: <span id="avg-turnaround-time">N/A</span></p>
-            </div>
-        </section>
+      <button id="add-process-btn">+ Add Process</button>
+    </section>
 
-        <hr>
+    <hr />
 
-        <section id="visualization-section">
-            <h2>Gantt Chart & Process States</h2>
-            <canvas id="scheduler-canvas" width="1000" height="300"></canvas> 
-            <div id="process-states">
-                <h3>Ready Queue:</h3>
-                <div id="ready-queue-display">Waiting processes will appear here...</div>
-            </div>
-        </section>
-        
-        <hr>
+    <!-- Controls & Statistics -->
+    <section id="control-stats-section">
+      <div id="controls">
+        <button id="simulate-btn">Simulate FCFS</button>
+        <button id="reset-btn">Reset</button>
+      </div>
 
-        <section id="export-section">
-            <button onclick="exportScreenshot()">Export Screenshot</button>
-        </section>
-        
-    </main>
-    
-    <script src="algorithm.js"></script>
-    <script src="animation.js"></script>
-    <script src="style.css"></script>
-    
-    <script>
-        // Start counter based on initial rows (P1, P2, P3 are 3, so next is P4)
-        let processCounter = 4; 
-        
-        /** Adds a new process row to the input table. */
-        function addProcessRow() {
-            const tableBody = document.getElementById('process-table').getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-            const pid = `P${processCounter++}`;
+      <div id="statistics">
+        <h3>Statistics</h3>
+        <p><strong>Average Waiting Time:</strong> <span id="avg-wt">-</span></p>
+        <p><strong>Average Turnaround Time:</strong> <span id="avg-tat">-</span></p>
+      </div>
+    </section>
 
-            // Insert cells with inputs
-            newRow.insertCell(0).textContent = pid;
-            newRow.insertCell(1).innerHTML = `<input type="number" value="0" min="0" data-id="${pid}" data-field="arrival">`;
-            newRow.insertCell(2).innerHTML = `<input type="number" value="1" min="1" data-id="${pid}" data-field="burst">`;
-            
-            // Add the new DELETE button cell
-            newRow.insertCell(3).innerHTML = `<button onclick="deleteProcess(this)">Delete</button>`; 
-        }
+    <hr />
 
-        /** Deletes a process row from the input table and relabels processes. */
-        function deleteProcess(btn) {
-            // Get the parent row (TR) of the button
-            const row = btn.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-            
-            // Re-label the process IDs after deletion
-            relabelProcesses();
-        }
+    <!-- Animation Canvas -->
+    <section>
+      <h2>Gantt Chart</h2>
+      <canvas id="scheduler-canvas" width="900" height="250"></canvas>
+    </section>
 
-        /** Re-labels the Process IDs (P1, P2, P3...) sequentially after a deletion. */
-        function relabelProcesses() {
-            const tableBody = document.getElementById('process-table').getElementsByTagName('tbody')[0];
-            const rows = tableBody.rows;
-            let counter = 1;
-            for (const row of rows) {
-                row.cells[0].textContent = `P${counter++}`;
-            }
-            processCounter = counter;
-        }
-        
-        // Placeholder for the main simulation function (defined in algorithm.js)
-        function runSimulation() {
-            const rawData = getProcessesFromUI(); // From algorithm.js
-            if (rawData.length > 0) {
-                const calculatedData = calculateFCFS(rawData); // From algorithm.js
-                generateExecutionTrace(calculatedData); // From algorithm.js
-            } else {
-                alert("Please add at least one process to run the simulation.");
-            }
-        }
-    </script>
+    <!-- Ready Queue Display -->
+    <section>
+      <h3>Ready Queue (Execution Order)</h3>
+      <div id="ready-queue-display">No processes yet.</div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="algorithm.js"></script>
+  <script src="animation.js"></script>
+
+  <script>
+    // Handle adding/removing processes dynamically
+    const processBody = document.getElementById("process-body");
+    let processCount = 1;
+
+    document.getElementById("add-process-btn").addEventListener("click", () => {
+      processCount++;
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>P${processCount}</td>
+        <td><input type="number" min="0" value="0" class="arrival" /></td>
+        <td><input type="number" min="1" value="5" class="burst" /></td>
+        <td><button onclick="removeRow(this)">Delete</button></td>
+      `;
+      processBody.appendChild(row);
+    });
+
+    function removeRow(btn) {
+      btn.parentElement.parentElement.remove();
+    }
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      processBody.innerHTML = `
+        <tr>
+          <td>P1</td>
+          <td><input type="number" min="0" value="0" class="arrival" /></td>
+          <td><input type="number" min="1" value="5" class="burst" /></td>
+          <td><button onclick="removeRow(this)">Delete</button></td>
+        </tr>
+      `;
+      document.getElementById("avg-wt").textContent = "-";
+      document.getElementById("avg-tat").textContent = "-";
+      document.getElementById("ready-queue-display").textContent = "No processes yet.";
+      const ctx = document.getElementById("scheduler-canvas").getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Simulation trigger
+    document.getElementById("simulate-btn").addEventListener("click", () => {
+      const processes = [];
+      document.querySelectorAll("#process-body tr").forEach((row, index) => {
+        const arrival = parseInt(row.querySelector(".arrival").value);
+        const burst = parseInt(row.querySelector(".burst").value);
+        processes.push({
+          id: `P${index + 1}`,
+          arrivalTime: arrival,
+          burstTime: burst
+        });
+      });
+
+      const result = fcfsScheduling(processes);
+      document.getElementById("avg-wt").textContent = result.avgWT.toFixed(2);
+      document.getElementById("avg-tat").textContent = result.avgTAT.toFixed(2);
+
+      document.getElementById("ready-queue-display").textContent =
+        result.executionTrace.map(p => p.name).join(" → ");
+
+      runFCFSAnimation(result.executionTrace);
+    });
+  </script>
 </body>
 </html>
