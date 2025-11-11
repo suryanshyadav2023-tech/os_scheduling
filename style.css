@@ -1,144 +1,227 @@
-/* --- Global Styles --- */
+/* ===== FCFS CPU Scheduling Simulator - Modern UI ===== */
+
+/* --- Base Layout --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f7f9; /* Light background */
-    color: #333;
+  background-color: #0f1115;
+  color: #e4e4e4;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
 }
 
+/* --- Headers --- */
+h1 {
+  color: #00eaff;
+  font-size: 1.8rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #00c2ff;
+  font-size: 1.4rem;
+  border-left: 4px solid #00c2ff;
+  padding-left: 10px;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+h3 {
+  color: #00b3ff;
+  margin-bottom: 10px;
+}
+
+/* --- Containers --- */
 main {
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+  max-width: 1200px;
+  margin: auto;
+  background: #161a20;
+  padding: 25px 35px;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0, 234, 255, 0.15);
 }
 
-h1, h2, h3 {
-    color: #004d99; /* VIT blue tone */
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 5px;
-    margin-top: 20px;
-}
-
-hr {
-    border: none;
-    border-top: 1px solid #e0e0e0;
-    margin: 20px 0;
-}
-
-/* --- Input Table & Forms --- */
+/* --- Process Table --- */
 #process-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 15px;
-}
-
-#process-table th, #process-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  background: #1d2129;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 #process-table th {
-    background-color: #eaf1f8;
-    font-weight: 600;
+  background: #00c2ff;
+  color: #000;
+  font-weight: 600;
+  padding: 10px;
 }
 
-input[type="number"] {
-    width: 80px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    text-align: center;
+#process-table td {
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #2a2f37;
 }
 
-/* --- Controls and Buttons --- */
+#process-table input {
+  width: 60px;
+  background: #111319;
+  color: #eee;
+  border: 1px solid #00c2ff;
+  border-radius: 5px;
+  padding: 4px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+#process-table input:focus {
+  outline: none;
+  box-shadow: 0 0 5px #00c2ff;
+}
+
+/* --- Buttons --- */
 button {
-    background-color: #007bff; /* Primary action color */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-right: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background: linear-gradient(135deg, #00eaff, #0096ff);
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  margin: 6px 6px 0 0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
 }
 
-button:hover:enabled {
-    background-color: #0056b3;
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px #00eaff;
 }
 
 button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* Style for the Delete button (to make it stand out as a warning) */
-#process-table button {
-    background-color: #dc3545; /* Red for delete */
-    padding: 5px 10px;
+/* --- Sliders --- */
+input[type="range"] {
+  accent-color: #00eaff;
+  width: 180px;
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
-#process-table button:hover {
-    background-color: #c82333;
+label {
+  font-weight: 600;
+  color: #ccc;
+  margin-right: 8px;
 }
 
-/* --- Controls and Statistics Section Layout (Using Flexbox) --- */
+/* --- Gantt Chart --- */
+#scheduler-canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  border: 2px solid #222831;
+  background: #101317;
+  box-shadow: inset 0 0 20px rgba(0, 234, 255, 0.07);
+}
+
+/* --- Control Section --- */
 #control-stats-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Aligns controls and stats nicely */
-    padding: 15px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 25px;
+  gap: 20px;
 }
 
 #controls {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between controls */
+  flex: 1;
+  min-width: 280px;
 }
 
 #statistics {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-left: 3px solid #007bff;
-    border-radius: 4px;
-    min-width: 250px;
+  flex: 1;
+  min-width: 260px;
+  background: #1a1e25;
+  border: 1px solid #2b3039;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: inset 0 0 10px rgba(0, 234, 255, 0.08);
 }
 
-#statistics h3 {
-    margin-top: 0;
-    padding-bottom: 5px;
-    border-bottom: 1px dashed #ccc;
+#statistics p {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
 }
 
-/* --- Visualization Area --- */
-#scheduler-canvas {
-    border: 2px solid #004d99;
-    background-color: #f7f7f7;
-    border-radius: 5px;
-    margin: 15px 0;
-}
-
-/* Ready Queue Visuals */
+/* --- Ready Queue Display --- */
 #ready-queue-display {
-    padding: 10px;
-    border: 1px solid #ffc107;
-    background-color: #fffbe6;
-    border-radius: 4px;
-    min-height: 40px;
-    line-height: 1.8;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px dashed #00c2ff;
+  min-height: 35px;
+  border-radius: 6px;
+  background: #15191f;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-/* --- Responsiveness (Optional but recommended) --- */
-@media (max-width: 800px) {
-    #control-stats-section {
-        flex-direction: column;
-        gap: 15px;
-    }
-    #statistics {
-        width: 100%;
-    }
+#ready-queue-display span {
+  background-color: #ffc107;
+  color: #000;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin: 2px;
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
+}
+
+/* --- Export Button --- */
+#export-section {
+  text-align: center;
+  margin-top: 25px;
+}
+
+#export-section button {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+}
+
+/* --- Horizontal Lines --- */
+hr {
+  border: 0;
+  border-top: 1px solid #222831;
+  margin: 30px 0;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  main {
+    padding: 20px;
+  }
+
+  #control-stats-section {
+    flex-direction: column;
+  }
+
+  #scheduler-canvas {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 8px;
+  }
 }
